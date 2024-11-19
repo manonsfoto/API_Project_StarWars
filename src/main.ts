@@ -50,6 +50,7 @@ async function fetchFilms(filmURL: string) {
 }
 // ==================================================
 async function fetchPlanets(planetURL: string, isForSearch: boolean) {
+  planetsArr = [];
   try {
     await fetchItemsInOnePage(planetURL, isForSearch);
 
@@ -68,6 +69,7 @@ async function fetchPlanets(planetURL: string, isForSearch: boolean) {
 }
 // ==================================================
 async function fetchPeople(peopleURL: string, isForSearch: boolean) {
+  peopleArr = [];
   try {
     await fetchItemsInOnePage(peopleURL, isForSearch);
 
