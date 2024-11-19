@@ -10,7 +10,7 @@ const PLANETS_ROUTE = `${BASE_URL}planets/`;
 const FILMS_ROUTE = `${BASE_URL}films/`;
 const PEOPLE_ROUTE = `${BASE_URL}people/`;
 
-// ^ Searching Param: https://swapi.dev/api/people/?search=r2
+// ^=== DOM Elemente ======================
 
 const filmsElement = document.querySelector("#api-films") as HTMLButtonElement;
 const planetsElement = document.querySelector(
@@ -19,19 +19,25 @@ const planetsElement = document.querySelector(
 const peopleElement = document.querySelector(
   "#api-people"
 ) as HTMLButtonElement;
-
 const outputElement = document.querySelector("#output") as HTMLDivElement;
-
 const inputSelect = document.querySelector("#inputSelect") as HTMLInputElement;
 const inputText = document.querySelector("#inputText") as HTMLInputElement;
+const btnSearch = document.querySelector("#btnSearch") as HTMLButtonElement;
 
-filmsElement?.addEventListener("click", async () => {
+// ^=== Empty Arrays for total items ======================
+
+let planetsArr: IPlanet[] = [];
+let peopleArr: IPerson[] = [];
+
+// ^=== fetch functions ======================
+
+async function fetchFilms(filmURL: string) {
   try {
-    const response: Response = await fetch(FILMS_ROUTE);
+    const response: Response = await fetch(filmURL);
     const data = await response.json();
-    console.log(data.results);
 
     outputElement.innerHTML = "";
+
     for (const result of data.results) {
       const filmDiv = document.createElement("div") as HTMLDivElement;
       filmDiv.innerHTML = await displayFilm(result);
@@ -40,21 +46,85 @@ filmsElement?.addEventListener("click", async () => {
   } catch (error) {
     console.error(error);
   }
-});
+}
+// ==================================================
+async function fetchPlanets(planetURL: string, isForSearch: boolean) {
+  try {
+    await fetchItemsInOnePage(planetURL, isForSearch);
 
-async function displayFilm(film: IFilm): Promise<string> {
-  const resultAsString = `
-<p class="episode_id">Episode ID: ${film.episode_id}</p>
-<p class="film_title">Title: ${film.title}</p>
-<p class="opening_crawl">Opening Crawl: ${film.opening_crawl}</p>
-<p class="release_date">Release Date: ${film.release_date}</p>
-<p class="film_characters">Characters: ${await fetchCharacters(
-    film.characters
-  )}</p>
-  `;
-  return resultAsString;
+    outputElement.innerHTML = "";
+
+    planetsArr.forEach((planet: IPlanet) => {
+      const planetDiv = document.createElement("div") as HTMLDivElement;
+      const resultAsString = displayPlanet(planet);
+      resultAsString.then((result) => (planetDiv.innerHTML = result));
+      outputElement.appendChild(planetDiv);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+// ==================================================
+async function fetchPeople(peopleURL: string, isForSearch: boolean) {
+  try {
+    await fetchItemsInOnePage(peopleURL, isForSearch);
+
+    outputElement.innerHTML = "";
+
+    peopleArr.forEach((person: IPerson) => {
+      const personDiv = document.createElement("div") as HTMLDivElement;
+      const resultAsString = displayPerson(person);
+      resultAsString.then((result) => (personDiv.innerHTML = result));
+      outputElement.appendChild(personDiv);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+// ==================================================
+
+async function generatePageCounter(routeURL: string): Promise<number> {
+  let pageCounter: number = 1;
+  try {
+    const response: Response = await fetch(routeURL);
+    const data = await response.json();
+    pageCounter = Math.ceil(data.count / 10);
+  } catch (error) {
+    console.error(error);
+  }
+  return pageCounter;
 }
 
+// ====================================================
+async function fetchItemsInOnePage(routeURL: string, isForSearch: boolean) {
+  try {
+    const pageCounter = await generatePageCounter(routeURL);
+    console.log("pageCounter:", pageCounter);
+
+    let index: number = 0;
+
+    while (index < pageCounter) {
+      index++;
+      const PAGE_URL = `${routeURL}?page=${index}`;
+      const SEARCH_PAGE_URL = `${routeURL}&page=${index}`;
+      const response: Response = await fetch(
+        isForSearch ? SEARCH_PAGE_URL : PAGE_URL
+      );
+      const data = await response.json();
+
+      for (const result of data.results) {
+        routeURL.includes("planet")
+          ? planetsArr.push(result)
+          : peopleArr.push(result);
+      }
+    }
+    console.log("plnetsARR:", planetsArr);
+    console.log("peopleARR:", peopleArr);
+  } catch (error) {
+    console.error(error);
+  }
+}
+// ==================================================
 async function fetchCharacters(filmCharacters: string[]): Promise<string> {
   const resultArray: string[] = [];
   for (const character of filmCharacters) {
@@ -69,44 +139,52 @@ async function fetchCharacters(filmCharacters: string[]): Promise<string> {
 
   return resultArray.join(", ");
 }
-let planetsArr: IPlanet[] = [];
-planetsElement?.addEventListener("click", async () => {
-  try {
-    await Promise.all([
-      fetchPlanetsInPage(1),
-      fetchPlanetsInPage(2),
-      fetchPlanetsInPage(3),
-      fetchPlanetsInPage(4),
-      fetchPlanetsInPage(5),
-      fetchPlanetsInPage(6),
-    ]);
-    console.log(planetsArr);
 
-    outputElement.innerHTML = "";
-    planetsArr.forEach((planet: IPlanet) => {
-      const planetDiv = document.createElement("div") as HTMLDivElement;
-      planetDiv.innerHTML = await displayPlanet(planet);
-      outputElement.appendChild(planetDiv);
-    });
+// ==================================================
+async function fetchHomeworld(planet: string): Promise<string> {
+  let homeworld: string = "";
+  try {
+    const response = await fetch(planet);
+    const data: IPlanet = await response.json();
+    homeworld = data.name;
   } catch (error) {
     console.error(error);
   }
-});
-
-async function fetchPlanetsInPage(pageNum: number) {
-  try {
-    const PLANET_BY_PAGE_URL = `${PLANETS_ROUTE}?page=${pageNum}`;
-    const response: Response = await fetch(PLANET_BY_PAGE_URL);
-    const data = await response.json();
-
-    for (const result of data.results) {
-      planetsArr.push(result);
-    }
-  } catch (error) {
-    console.error(error);
-  }
+  return homeworld;
 }
 
+// ==================================================
+
+async function fetchPersonFilms(films: string[]): Promise<string> {
+  const resultArray: string[] = [];
+  for (const film of films) {
+    try {
+      const response = await fetch(film);
+      const data: IFilm = await response.json();
+      resultArray.push(data.title);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  return resultArray.join(", ");
+}
+
+// ^=== display functions ======================
+
+async function displayFilm(film: IFilm): Promise<string> {
+  const resultAsString = `
+<p class="episode_id">Episode ID: ${film.episode_id}</p>
+<p class="film_title">Title: ${film.title}</p>
+<p class="opening_crawl">Opening Crawl: ${film.opening_crawl}</p>
+<p class="release_date">Release Date: ${film.release_date}</p>
+<p class="film_characters">Characters: ${await fetchCharacters(
+    film.characters
+  )}</p>
+  `;
+  return resultAsString;
+}
+// ==================================================
 async function displayPlanet(planet: IPlanet): Promise<string> {
   const resultAsString = `
 <p class="planet_name">Name: ${planet.name}</p>
@@ -119,3 +197,48 @@ async function displayPlanet(planet: IPlanet): Promise<string> {
   `;
   return resultAsString;
 }
+// ==================================================
+async function displayPerson(person: IPerson): Promise<string> {
+  const resultAsString = `
+<p class="person_name">Name: ${person.name}</p>
+<p class="gender">Gender: ${person.gender}</p>
+<p class="homeworld">Homeworld: ${await fetchHomeworld(person.homeworld)}</p>
+<p class="person_films">Films:${await fetchPersonFilms(person.films)}</p>
+
+  `;
+  return resultAsString;
+}
+
+// ^=== buttons events ======================
+filmsElement?.addEventListener("click", () => {
+  fetchFilms(FILMS_ROUTE);
+});
+// ==================================================
+planetsElement?.addEventListener("click", () => {
+  fetchPlanets(PLANETS_ROUTE, false);
+});
+// ==================================================
+peopleElement?.addEventListener("click", () => {
+  fetchPeople(PEOPLE_ROUTE, false);
+});
+
+// ==================================================
+btnSearch?.addEventListener("click", () => {
+  const textValue = inputText?.value.trim().toLowerCase();
+  let SEARCH_URL = "";
+  switch (inputSelect.value) {
+    case "films":
+      SEARCH_URL = `${FILMS_ROUTE}?search=${textValue}`;
+      return fetchFilms(SEARCH_URL);
+
+    case "planets":
+      SEARCH_URL = `${PLANETS_ROUTE}?search=${textValue}`;
+
+      return fetchPlanets(SEARCH_URL, true);
+
+      break;
+    case "people":
+      SEARCH_URL = `${PEOPLE_ROUTE}?search=${textValue}`;
+      return fetchPeople(SEARCH_URL, true);
+  }
+});
