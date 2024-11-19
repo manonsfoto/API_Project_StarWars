@@ -40,6 +40,7 @@ async function fetchFilms(filmURL: string) {
 
     for (const result of data.results) {
       const filmDiv = document.createElement("div") as HTMLDivElement;
+      filmDiv.classList.add("filmDiv");
       filmDiv.innerHTML = await displayFilm(result);
       outputElement.appendChild(filmDiv);
     }
@@ -56,6 +57,7 @@ async function fetchPlanets(planetURL: string, isForSearch: boolean) {
 
     planetsArr.forEach((planet: IPlanet) => {
       const planetDiv = document.createElement("div") as HTMLDivElement;
+      planetDiv.classList.add("planetDiv");
       const resultAsString = displayPlanet(planet);
       resultAsString.then((result) => (planetDiv.innerHTML = result));
       outputElement.appendChild(planetDiv);
@@ -73,6 +75,8 @@ async function fetchPeople(peopleURL: string, isForSearch: boolean) {
 
     peopleArr.forEach((person: IPerson) => {
       const personDiv = document.createElement("div") as HTMLDivElement;
+      personDiv.classList.add("personDiv");
+
       const resultAsString = displayPerson(person);
       resultAsString.then((result) => (personDiv.innerHTML = result));
       outputElement.appendChild(personDiv);
@@ -174,9 +178,7 @@ async function fetchPersonFilms(films: string[]): Promise<string> {
 
 async function displayFilm(film: IFilm): Promise<string> {
   const resultAsString = `
-<p class="episode_id">Episode ID: ${film.episode_id}</p>
-<p class="film_title">Title: ${film.title}</p>
-<p class="opening_crawl">Opening Crawl: ${film.opening_crawl}</p>
+<p class="film_title">${film.title}</p>
 <p class="release_date">Release Date: ${film.release_date}</p>
 <p class="film_characters">Characters: ${await fetchCharacters(
     film.characters
@@ -187,10 +189,9 @@ async function displayFilm(film: IFilm): Promise<string> {
 // ==================================================
 async function displayPlanet(planet: IPlanet): Promise<string> {
   const resultAsString = `
-<p class="planet_name">Name: ${planet.name}</p>
+<p class="planet_name">${planet.name}</p>
 <p class="climate">Climate: ${planet.climate}</p>
 <p class="terrain">Terrain: ${planet.terrain}</p>
-<p class="population">Population: ${planet.population}</p>
 <p class="planet_residents">Residents: ${await fetchCharacters(
     planet.residents
   )}</p>
@@ -200,7 +201,7 @@ async function displayPlanet(planet: IPlanet): Promise<string> {
 // ==================================================
 async function displayPerson(person: IPerson): Promise<string> {
   const resultAsString = `
-<p class="person_name">Name: ${person.name}</p>
+<p class="person_name">${person.name}</p>
 <p class="gender">Gender: ${person.gender}</p>
 <p class="homeworld">Homeworld: ${await fetchHomeworld(person.homeworld)}</p>
 <p class="person_films">Films:${await fetchPersonFilms(person.films)}</p>

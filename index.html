@@ -6,24 +6,28 @@
     <script type="module" src="/src/main.ts" defer></script>
     <title>Project Star Wars</title>
   </head>
-  <body>
-    <header>
+  <body class="flex">
+    <header class="flex">
       <h1>Star Wars</h1>
       <nav>
-        <ul>
+        <ul class="flex">
           <li><button type="button" id="api-films">Films</button></li>
           <li><button type="button" id="api-planets">Planets</button></li>
           <li><button type="button" id="api-people">People</button></li>
         </ul>
       </nav>
-      <select id="inputSelect">
-        <option value="films">Films</option>
-        <option value="planets">Planets</option>
-        <option value="people">People</option>
-      </select>
-      <input type="text" id="inputText" />
-      <button type="button" id="btnSearch">Search</button>
+      <div class="input_box flex">
+        <div>
+          <select id="inputSelect">
+            <option value="films">Films</option>
+            <option value="planets">Planets</option>
+            <option value="people">People</option>
+          </select>
+          <input type="text" id="inputText" />
+        </div>
+        <button type="button" id="btnSearch">Search</button>
+      </div>
     </header>
-    <main id="output"></main>
+    <main class="flex" id="output"></main>
   </body>
 </html>
