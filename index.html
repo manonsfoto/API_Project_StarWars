@@ -6,5 +6,23 @@
     <script type="module" src="/src/main.ts" defer></script>
     <title>Project Star Wars</title>
   </head>
-  <body></body>
+  <body>
+    <header>
+      <h1>Star Wars</h1>
+      <nav>
+        <ul>
+          <li><button type="button" id="api-films">Films</button></li>
+          <li><button type="button" id="api-planets">Planets</button></li>
+          <li><button type="button" id="api-people">People</button></li>
+        </ul>
+      </nav>
+      <select id="inputSelect">
+        <option value="">Films</option>
+        <option value="">Planets</option>
+        <option value="">People</option>
+      </select>
+      <input type="text" id="inputText" placeholder="Search" />
+    </header>
+    <main id="output"></main>
+  </body>
 </html>
