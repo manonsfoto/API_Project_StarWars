@@ -37,12 +37,20 @@ async function fetchFilms(filmURL: string) {
     const response: Response = await fetch(filmURL);
     const data = await response.json();
 
-    outputElement.innerHTML = "";
-    const filmPromises = data.results.map((result: any) => displayFilm(result));
-    const filmHTMLArray = await Promise.all(filmPromises);
-    outputElement.innerHTML = filmHTMLArray
-      .map((filmHTML) => `<div class="filmDiv">${filmHTML}</div>`)
-      .join("");
+    const filmsHTML = await Promise.all(
+      data.results.map(async (film: IFilm) => {
+        const characters = await fetchCharacters(film.characters);
+        return `
+          <div class="filmDiv">
+            <p class="film_title">${film.title}</p>
+            <p class="release_date">Release Date: ${film.release_date}</p>
+            <p class="film_characters">Characters: ${characters}</p>
+          </div>
+        `;
+      })
+    );
+
+    outputElement.innerHTML = filmsHTML.join("");
   } catch (error) {
     console.error(error);
   } finally {
@@ -56,16 +64,21 @@ async function fetchPlanets(planetURL: string, isForSearch: boolean) {
   try {
     await fetchItemsInOnePage(planetURL, isForSearch);
 
-    const planetDivs = planetsArr.map(async (planet: IPlanet) => {
-      const planetDiv = document.createElement("div");
-      planetDiv.classList.add("planetDiv");
-      planetDiv.innerHTML = await displayPlanet(planet);
-      return planetDiv;
-    });
+    const planetsHTML = await Promise.all(
+      planetsArr.map(async (planet: IPlanet) => {
+        const residents = await fetchCharacters(planet.residents);
+        return `
+          <div class="planetDiv">
+            <p class="planet_name">${planet.name}</p>
+            <p class="climate">Climate: ${planet.climate}</p>
+            <p class="terrain">Terrain: ${planet.terrain}</p>
+            <p class="planet_residents">Residents: ${residents}</p>
+          </div>
+        `;
+      })
+    );
 
-    const divs = await Promise.all(planetDivs);
-    outputElement.innerHTML = "";
-    divs.forEach((div) => outputElement.appendChild(div));
+    outputElement.innerHTML = planetsHTML.join("");
   } catch (error) {
     console.error(error);
   } finally {
@@ -80,16 +93,22 @@ async function fetchPeople(peopleURL: string, isForSearch: boolean) {
   try {
     await fetchItemsInOnePage(peopleURL, isForSearch);
 
-    const personDivs = peopleArr.map(async (person: IPerson) => {
-      const personDiv = document.createElement("div");
-      personDiv.classList.add("personDiv");
-      personDiv.innerHTML = await displayPerson(person);
-      return personDiv;
-    });
+    const peopleHTML = await Promise.all(
+      peopleArr.map(async (person: IPerson) => {
+        const homeworld = await fetchHomeworld(person.homeworld);
+        const films = await fetchPersonFilms(person.films);
+        return `
+          <div class="personDiv">
+            <p class="person_name">${person.name}</p>
+            <p class="gender">Gender: ${person.gender}</p>
+            <p class="homeworld">Homeworld: ${homeworld}</p>
+            <p class="person_films">Films: ${films}</p>
+          </div>
+        `;
+      })
+    );
 
-    const divs = await Promise.all(personDivs);
-    outputElement.innerHTML = "";
-    divs.forEach((div) => outputElement.appendChild(div));
+    outputElement.innerHTML = peopleHTML.join("");
   } catch (error) {
     console.error(error);
   } finally {
@@ -101,22 +120,19 @@ async function fetchPeople(peopleURL: string, isForSearch: boolean) {
 
 async function generatePageCounter(routeURL: string): Promise<number> {
   let pageCounter: number = 1;
-  showLoader();
+
   try {
     const response: Response = await fetch(routeURL);
     const data = await response.json();
     pageCounter = Math.ceil(data.count / 10);
   } catch (error) {
     console.error(error);
-  } finally {
-    hideLoader();
   }
   return pageCounter;
 }
 
 // ====================================================
 async function fetchItemsInOnePage(routeURL: string, isForSearch: boolean) {
-  showLoader();
   try {
     const pageCounter = await generatePageCounter(routeURL);
 
@@ -139,13 +155,10 @@ async function fetchItemsInOnePage(routeURL: string, isForSearch: boolean) {
     }
   } catch (error) {
     console.error(error);
-  } finally {
-    hideLoader();
   }
 }
 // ==================================================
 async function fetchCharacters(filmCharacters: string[]): Promise<string> {
-  showLoader();
   try {
     const characterPromises = filmCharacters.map((character) =>
       fetch(character).then((response) => response.json())
@@ -155,23 +168,19 @@ async function fetchCharacters(filmCharacters: string[]): Promise<string> {
   } catch (error) {
     console.error(error);
     return "";
-  } finally {
-    hideLoader();
   }
 }
 
 // ==================================================
 async function fetchHomeworld(planet: string): Promise<string> {
   let homeworld: string = "";
-  showLoader();
+
   try {
     const response = await fetch(planet);
     const data: IPlanet = await response.json();
     homeworld = data.name;
   } catch (error) {
     console.error(error);
-  } finally {
-    hideLoader();
   }
   return homeworld;
 }
@@ -179,7 +188,6 @@ async function fetchHomeworld(planet: string): Promise<string> {
 // ==================================================
 
 async function fetchPersonFilms(films: string[]): Promise<string> {
-  showLoader();
   try {
     const titlesOfFilmsPromises = films.map((film) =>
       fetch(film).then((response) => response.json())
@@ -189,45 +197,7 @@ async function fetchPersonFilms(films: string[]): Promise<string> {
   } catch (error) {
     console.error(error);
     return "";
-  } finally {
-    hideLoader();
   }
-}
-
-// ^=== display functions ======================
-
-async function displayFilm(film: IFilm): Promise<string> {
-  const resultAsString = `
-<p class="film_title">${film.title}</p>
-<p class="release_date">Release Date: ${film.release_date}</p>
-<p class="film_characters">Characters: ${await fetchCharacters(
-    film.characters
-  )}</p>
-  `;
-  return resultAsString;
-}
-// ==================================================
-async function displayPlanet(planet: IPlanet): Promise<string> {
-  const resultAsString = `
-<p class="planet_name">${planet.name}</p>
-<p class="climate">Climate: ${planet.climate}</p>
-<p class="terrain">Terrain: ${planet.terrain}</p>
-<p class="planet_residents">Residents: ${await fetchCharacters(
-    planet.residents
-  )}</p>
-  `;
-  return resultAsString;
-}
-// ==================================================
-async function displayPerson(person: IPerson): Promise<string> {
-  const resultAsString = `
-<p class="person_name">${person.name}</p>
-<p class="gender">Gender: ${person.gender}</p>
-<p class="homeworld">Homeworld: ${await fetchHomeworld(person.homeworld)}</p>
-<p class="person_films">Films:${await fetchPersonFilms(person.films)}</p>
-
-  `;
-  return resultAsString;
 }
 
 // ^=== buttons events ======================
