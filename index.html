@@ -8,7 +8,7 @@
   </head>
   <body class="flex">
     <header class="flex">
-      <h1>Star Wars</h1>
+      <img src="./src/img/logo.jpg" alt="starwars logo" />
       <nav>
         <ul class="flex">
           <li><button type="button" id="api-films">Films</button></li>
@@ -26,6 +26,9 @@
           <input type="text" id="inputText" />
         </div>
         <button type="button" id="btnSearch">Search</button>
+      </div>
+      <div id="loader" class="hidden">
+        <div class="spinner"></div>
       </div>
     </header>
     <main class="flex" id="output"></main>

@@ -32,80 +32,93 @@ let peopleArr: IPerson[] = [];
 // ^=== fetch functions ======================
 
 async function fetchFilms(filmURL: string) {
+  showLoader();
   try {
     const response: Response = await fetch(filmURL);
     const data = await response.json();
 
     outputElement.innerHTML = "";
-
-    for (const result of data.results) {
-      const filmDiv = document.createElement("div") as HTMLDivElement;
-      filmDiv.classList.add("filmDiv");
-      filmDiv.innerHTML = await displayFilm(result);
-      outputElement.appendChild(filmDiv);
-    }
+    const filmPromises = data.results.map((result: any) => displayFilm(result));
+    const filmHTMLArray = await Promise.all(filmPromises);
+    outputElement.innerHTML = filmHTMLArray
+      .map((filmHTML) => `<div class="filmDiv">${filmHTML}</div>`)
+      .join("");
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoader();
   }
 }
 // ==================================================
 async function fetchPlanets(planetURL: string, isForSearch: boolean) {
   planetsArr = [];
+  showLoader();
   try {
     await fetchItemsInOnePage(planetURL, isForSearch);
 
-    outputElement.innerHTML = "";
-
-    planetsArr.forEach((planet: IPlanet) => {
-      const planetDiv = document.createElement("div") as HTMLDivElement;
+    const planetDivs = planetsArr.map(async (planet: IPlanet) => {
+      const planetDiv = document.createElement("div");
       planetDiv.classList.add("planetDiv");
-      const resultAsString = displayPlanet(planet);
-      resultAsString.then((result) => (planetDiv.innerHTML = result));
-      outputElement.appendChild(planetDiv);
+      planetDiv.innerHTML = await displayPlanet(planet);
+      return planetDiv;
     });
+
+    const divs = await Promise.all(planetDivs);
+    outputElement.innerHTML = "";
+    divs.forEach((div) => outputElement.appendChild(div));
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoader();
   }
 }
+
 // ==================================================
 async function fetchPeople(peopleURL: string, isForSearch: boolean) {
   peopleArr = [];
+  showLoader();
   try {
     await fetchItemsInOnePage(peopleURL, isForSearch);
 
-    outputElement.innerHTML = "";
-
-    peopleArr.forEach((person: IPerson) => {
-      const personDiv = document.createElement("div") as HTMLDivElement;
+    const personDivs = peopleArr.map(async (person: IPerson) => {
+      const personDiv = document.createElement("div");
       personDiv.classList.add("personDiv");
-
-      const resultAsString = displayPerson(person);
-      resultAsString.then((result) => (personDiv.innerHTML = result));
-      outputElement.appendChild(personDiv);
+      personDiv.innerHTML = await displayPerson(person);
+      return personDiv;
     });
+
+    const divs = await Promise.all(personDivs);
+    outputElement.innerHTML = "";
+    divs.forEach((div) => outputElement.appendChild(div));
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoader();
   }
 }
+
 // ==================================================
 
 async function generatePageCounter(routeURL: string): Promise<number> {
   let pageCounter: number = 1;
+  showLoader();
   try {
     const response: Response = await fetch(routeURL);
     const data = await response.json();
     pageCounter = Math.ceil(data.count / 10);
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoader();
   }
   return pageCounter;
 }
 
 // ====================================================
 async function fetchItemsInOnePage(routeURL: string, isForSearch: boolean) {
+  showLoader();
   try {
     const pageCounter = await generatePageCounter(routeURL);
-    console.log("pageCounter:", pageCounter);
 
     let index: number = 0;
 
@@ -124,37 +137,41 @@ async function fetchItemsInOnePage(routeURL: string, isForSearch: boolean) {
           : peopleArr.push(result);
       }
     }
-    console.log("plnetsARR:", planetsArr);
-    console.log("peopleARR:", peopleArr);
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoader();
   }
 }
 // ==================================================
 async function fetchCharacters(filmCharacters: string[]): Promise<string> {
-  const resultArray: string[] = [];
-  for (const character of filmCharacters) {
-    try {
-      const response = await fetch(character);
-      const data: IPerson = await response.json();
-      resultArray.push(data.name);
-    } catch (error) {
-      console.error(error);
-    }
+  showLoader();
+  try {
+    const characterPromises = filmCharacters.map((character) =>
+      fetch(character).then((response) => response.json())
+    );
+    const characters = await Promise.all(characterPromises);
+    return characters.map((character) => character.name).join(", ");
+  } catch (error) {
+    console.error(error);
+    return "";
+  } finally {
+    hideLoader();
   }
-
-  return resultArray.join(", ");
 }
 
 // ==================================================
 async function fetchHomeworld(planet: string): Promise<string> {
   let homeworld: string = "";
+  showLoader();
   try {
     const response = await fetch(planet);
     const data: IPlanet = await response.json();
     homeworld = data.name;
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoader();
   }
   return homeworld;
 }
@@ -162,18 +179,19 @@ async function fetchHomeworld(planet: string): Promise<string> {
 // ==================================================
 
 async function fetchPersonFilms(films: string[]): Promise<string> {
-  const resultArray: string[] = [];
-  for (const film of films) {
-    try {
-      const response = await fetch(film);
-      const data: IFilm = await response.json();
-      resultArray.push(data.title);
-    } catch (error) {
-      console.error(error);
-    }
+  showLoader();
+  try {
+    const titlesOfFilmsPromises = films.map((film) =>
+      fetch(film).then((response) => response.json())
+    );
+    const titlesForfilms = await Promise.all(titlesOfFilmsPromises);
+    return titlesForfilms.map((film) => film.title).join(", ");
+  } catch (error) {
+    console.error(error);
+    return "";
+  } finally {
+    hideLoader();
   }
-
-  return resultArray.join(", ");
 }
 
 // ^=== display functions ======================
@@ -229,19 +247,31 @@ peopleElement?.addEventListener("click", () => {
 btnSearch?.addEventListener("click", () => {
   const textValue = inputText?.value.trim().toLowerCase();
   let SEARCH_URL = "";
+  showLoader();
   switch (inputSelect.value) {
     case "films":
       SEARCH_URL = `${FILMS_ROUTE}?search=${textValue}`;
-      return fetchFilms(SEARCH_URL);
+      fetchFilms(SEARCH_URL).finally(() => hideLoader());
+      break;
 
     case "planets":
       SEARCH_URL = `${PLANETS_ROUTE}?search=${textValue}`;
-
-      return fetchPlanets(SEARCH_URL, true);
-
+      fetchPlanets(SEARCH_URL, true).finally(() => hideLoader());
       break;
+
     case "people":
       SEARCH_URL = `${PEOPLE_ROUTE}?search=${textValue}`;
-      return fetchPeople(SEARCH_URL, true);
+      fetchPeople(SEARCH_URL, true).finally(() => hideLoader());
+      break;
   }
 });
+
+const loaderElement = document.querySelector("#loader") as HTMLDivElement;
+
+function showLoader() {
+  loaderElement.classList.remove("hidden");
+}
+
+function hideLoader() {
+  loaderElement.classList.add("hidden");
+}
