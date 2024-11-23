@@ -1,5 +1,5 @@
 import "./style.css";
-
+import { format } from "date-fns";
 import { IFilm } from "./interfaces/IFilm";
 import { IPerson } from "./interfaces/IPerson";
 import { IPlanet } from "./interfaces/IPlanet";
@@ -10,7 +10,7 @@ const PLANETS_ROUTE = `${BASE_URL}planets/`;
 const FILMS_ROUTE = `${BASE_URL}films/`;
 const PEOPLE_ROUTE = `${BASE_URL}people/`;
 
-// ^=== DOM Elemente ======================
+// ^=== DOM Elements ======================
 
 const filmsElement = document.querySelector("#api-films") as HTMLButtonElement;
 const planetsElement = document.querySelector(
@@ -39,12 +39,16 @@ async function fetchFilms(filmURL: string) {
 
     const filmsHTML = await Promise.all(
       data.results.map(async (film: IFilm) => {
-        const characters = await fetchCharacters(film.characters);
         return `
           <div class="filmDiv">
             <p class="film_title">${film.title}</p>
-            <p class="release_date">Release Date: ${film.release_date}</p>
-            <p class="film_characters">Characters: ${characters}</p>
+            <p class="film_opening_crwal">${film.opening_crawl}</p>
+            <p class="film_director"><span>Director:</span> ${film.director}</p>
+            <p class="film_producer"><span>Producer:</span> ${film.producer}</p>
+            <p class="release_date"><span>Release Date:</span> ${format(
+              film.release_date,
+              "PP"
+            )}</p>
           </div>
         `;
       })
@@ -70,9 +74,17 @@ async function fetchPlanets(planetURL: string, isForSearch: boolean) {
         return `
           <div class="planetDiv">
             <p class="planet_name">${planet.name}</p>
-            <p class="climate">Climate: ${planet.climate}</p>
-            <p class="terrain">Terrain: ${planet.terrain}</p>
-            <p class="planet_residents">Residents: ${residents}</p>
+            <p class="rotation_period"><span>Rotation Period:</span> ${
+              planet.rotation_period
+            }</p>
+            <p class="orbital_period"><span>Orbital Period:</span> ${
+              planet.orbital_period
+            }</p>
+            <p class="climate"><span>Climate:</span> ${planet.climate}</p>
+            <p class="terrain"><span>Terrain:</span> ${planet.terrain}</p>
+            <p class="planet_residents"><span>Residents:</span> ${
+              residents ? residents : "No residents"
+            }</p>
           </div>
         `;
       })
@@ -100,9 +112,9 @@ async function fetchPeople(peopleURL: string, isForSearch: boolean) {
         return `
           <div class="personDiv">
             <p class="person_name">${person.name}</p>
-            <p class="gender">Gender: ${person.gender}</p>
-            <p class="homeworld">Homeworld: ${homeworld}</p>
-            <p class="person_films">Films: ${films}</p>
+            <p class="gender"><span>Gender:</span> ${person.gender}</p>
+            <p class="homeworld"><span>Homeworld:</span> ${homeworld}</p>
+            <p class="person_films"><span>Films:</span><br>${films}</p>
           </div>
         `;
       })
@@ -193,7 +205,7 @@ async function fetchPersonFilms(films: string[]): Promise<string> {
       fetch(film).then((response) => response.json())
     );
     const titlesForfilms = await Promise.all(titlesOfFilmsPromises);
-    return titlesForfilms.map((film) => film.title).join(", ");
+    return titlesForfilms.map((film) => film.title).join("<br>");
   } catch (error) {
     console.error(error);
     return "";
@@ -202,14 +214,17 @@ async function fetchPersonFilms(films: string[]): Promise<string> {
 
 // ^=== buttons events ======================
 filmsElement?.addEventListener("click", () => {
+  outputElement.innerHTML = "";
   fetchFilms(FILMS_ROUTE);
 });
 // ==================================================
 planetsElement?.addEventListener("click", () => {
+  outputElement.innerHTML = "";
   fetchPlanets(PLANETS_ROUTE, false);
 });
 // ==================================================
 peopleElement?.addEventListener("click", () => {
+  outputElement.innerHTML = "";
   fetchPeople(PEOPLE_ROUTE, false);
 });
 
@@ -217,6 +232,7 @@ peopleElement?.addEventListener("click", () => {
 btnSearch?.addEventListener("click", () => {
   const textValue = inputText?.value.trim().toLowerCase();
   let SEARCH_URL = "";
+  outputElement.innerHTML = "";
   showLoader();
   switch (inputSelect.value) {
     case "films":
@@ -235,7 +251,7 @@ btnSearch?.addEventListener("click", () => {
       break;
   }
 });
-
+// ==================================================
 const loaderElement = document.querySelector("#loader") as HTMLDivElement;
 
 function showLoader() {

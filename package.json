@@ -11,5 +11,8 @@
   "devDependencies": {
     "typescript": "~5.6.2",
     "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
   }
 }

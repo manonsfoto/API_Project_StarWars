@@ -8,13 +8,10 @@
   </head>
   <body class="flex">
     <header class="flex">
-      <img src="./src/img/logo.jpg" alt="starwars logo" />
-      <nav>
-        <ul class="flex">
-          <li><button type="button" id="api-films">Films</button></li>
-          <li><button type="button" id="api-planets">Planets</button></li>
-          <li><button type="button" id="api-people">People</button></li>
-        </ul>
+      <nav class="flex">
+        <button type="button" id="api-films">→ <span>Films</span></button>
+        <button type="button" id="api-planets">→ <span>Planets</span></button>
+        <button type="button" id="api-people">→ <span>People</span></button>
       </nav>
       <div class="input_box flex">
         <div>
@@ -25,8 +22,9 @@
           </select>
           <input type="text" id="inputText" />
         </div>
-        <button type="button" id="btnSearch">Search</button>
+        <button type="button" id="btnSearch"><span>Search</span></button>
       </div>
+
       <div id="loader" class="hidden">
         <div class="spinner"></div>
       </div>

@@ -1,69 +1,136 @@
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url(./fonts/Montserrat-Regular.ttf);
+}
+@font-face {
+  font-family: "Orbitron-Regular";
+  src: url(./fonts/Orbitron-Regular.ttf);
+}
+@font-face {
+  font-family: "Orbitron-SemiBold";
+  src: url(./fonts/Orbitron-SemiBold.ttf);
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
+html {
+  font-size: 62.5%;
+  font-family: "Montserrat-Regular", sans-serif;
+  scroll-behavior: smooth;
+}
+body {
+  max-width: 1920px;
+  margin: 0 auto;
+  background: #0b0b0b url("./img/starwarsbackground.jpg") no-repeat right top;
+  background-size: 100vw;
+  color: #fff;
+}
 .flex {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 body,
 header {
   flex-direction: column;
+  width: 100%;
 }
 
-body {
-  gap: 2rem;
-  /* background-image: url(./img/nightsky.jpg);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain; */
-
-  margin: 0 auto;
+nav {
+  width: 100%;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 2px solid #ffffff83;
+  margin-bottom: 2rem;
 }
-header img {
-  width: 10rem;
+nav button,
+input,
+select,
+#btnSearch {
+  background: none;
+  font-family: "Orbitron-Regular", sans-serif;
+  color: #fff;
+  font-size: 3rem;
+}
+button {
+  border: none;
+}
+button:hover {
+  cursor: pointer;
+}
+button:hover span {
+  text-decoration: underline;
+}
+select {
+  background-color: #0b0b0b;
+}
+.input_box {
+  gap: 5rem;
 }
 main {
   flex-wrap: wrap;
-  gap: 1rem;
-}
-.film_title,
-.planet_name,
-.person_name {
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-ul {
-  list-style: none;
+  justify-content: center;
   gap: 2rem;
+  margin-top: 8rem;
 }
+
 .personDiv,
 .planetDiv,
 .filmDiv {
-  border: 2px solid black;
-  border-radius: 1rem;
-
-  padding: 1rem;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  border-radius: 0 2rem 0 0;
+  font-weight: 700;
 }
 
 .filmDiv {
-  width: 40rem;
-  height: 15rem;
+  width: 45rem;
+  height: 40rem;
+  background-color: #ff0000;
 }
 .planetDiv {
-  width: 15rem;
-  height: 15rem;
+  width: 30rem;
+  height: 31rem;
+  color: #0b0b0b;
+  background-color: #fff;
+  border: 0.3rem solid #ff0000;
 }
 .personDiv {
-  width: 15rem;
-  height: 15rem;
+  width: 32rem;
+  height: 28rem;
+  background-color: #ff0000;
+  border: 0.3rem solid #fff;
 }
-.input_box {
-  gap: 1rem;
+
+.film_title,
+.planet_name,
+.person_name {
+  font-size: 2.5rem;
+  font-family: "Orbitron-SemiBold";
+  padding-bottom: 1.5rem;
+}
+.film_opening_crwal {
+  background-color: #fff;
+  color: #0b0b0b;
+  border-radius: 1rem;
+  padding: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.filmDiv span,
+.planetDiv span,
+.personDiv span {
+  background-color: #0b0b0b;
+  border-radius: 1rem;
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  line-height: 180%;
+}
+.planetDiv span {
+  color: #fff;
 }
 
 #loader {
@@ -75,10 +142,10 @@ ul {
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0, 0, 0, 0.2);
-  border-top-color: #000;
+  width: 10rem;
+  height: 10rem;
+  border: 1rem solid rgba(255, 0, 0, 0.34);
+  border-top-color: #ff0000;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
