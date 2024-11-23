@@ -80,6 +80,7 @@ main {
   justify-content: center;
   gap: 2rem;
   margin-top: 8rem;
+  padding-bottom: 8rem;
 }
 main div:hover {
   box-shadow: #0f42de 0px 0px 5rem;
