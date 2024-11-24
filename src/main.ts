@@ -4,6 +4,10 @@ import { IFilm } from "./interfaces/IFilm";
 import { IPerson } from "./interfaces/IPerson";
 import { IPlanet } from "./interfaces/IPlanet";
 
+import backgroundImageFilm from "./img/flimbackground.jpg";
+import backgroundImagePeople from "./img/pplbackground.jpg";
+import backgroundImagePlanet from "./img/planetbackground.jpg";
+
 const BASE_URL = "https://swapi.dev/api/";
 
 const PLANETS_ROUTE = `${BASE_URL}planets/`;
@@ -214,16 +218,19 @@ async function fetchPersonFilms(films: string[]): Promise<string> {
 
 // ^=== buttons events ======================
 filmsElement?.addEventListener("click", () => {
+  document.body.style.backgroundImage = `url(${backgroundImageFilm})`;
   outputElement.innerHTML = "";
   fetchFilms(FILMS_ROUTE);
 });
 // ==================================================
 planetsElement?.addEventListener("click", () => {
+  document.body.style.backgroundImage = `url(${backgroundImagePlanet})`;
   outputElement.innerHTML = "";
   fetchPlanets(PLANETS_ROUTE, false);
 });
 // ==================================================
 peopleElement?.addEventListener("click", () => {
+  document.body.style.backgroundImage = `url(${backgroundImagePeople})`;
   outputElement.innerHTML = "";
   fetchPeople(PEOPLE_ROUTE, false);
 });
@@ -236,16 +243,19 @@ btnSearch?.addEventListener("click", () => {
   showLoader();
   switch (inputSelect.value) {
     case "films":
+      document.body.style.backgroundImage = `url(${backgroundImageFilm})`;
       SEARCH_URL = `${FILMS_ROUTE}?search=${textValue}`;
       fetchFilms(SEARCH_URL).finally(() => hideLoader());
       break;
 
     case "planets":
+      document.body.style.backgroundImage = `url(${backgroundImagePlanet})`;
       SEARCH_URL = `${PLANETS_ROUTE}?search=${textValue}`;
       fetchPlanets(SEARCH_URL, true).finally(() => hideLoader());
       break;
 
     case "people":
+      document.body.style.backgroundImage = `url(${backgroundImagePeople})`;
       SEARCH_URL = `${PEOPLE_ROUTE}?search=${textValue}`;
       fetchPeople(SEARCH_URL, true).finally(() => hideLoader());
       break;

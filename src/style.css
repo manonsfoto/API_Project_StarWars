@@ -23,7 +23,7 @@ html {
 body {
   max-width: 1920px;
   margin: 0 auto;
-  background: #0b0b0b url("./img/starwarsbackground.jpg") no-repeat right top;
+  background: #0b0b0b url("./img/logobackground.jpg") no-repeat right top;
   background-size: 100vw;
   color: #fff;
 }
@@ -72,8 +72,8 @@ select {
   justify-content: center;
 }
 #inputText:hover {
-  box-shadow: #cb200f 0px 0px 20px;
-  border: 2px solid #cb200f;
+  box-shadow: #c83a23 0px 0px 20px;
+  border: 2px solid #c83a23;
 }
 main {
   flex-wrap: wrap;
@@ -83,8 +83,8 @@ main {
   padding-bottom: 8rem;
 }
 main div:hover {
-  box-shadow: #0f42de 0px 0px 5rem;
-  border: 0.2rem solid #0f42de;
+  box-shadow: #21b2ec 0px 0px 5rem;
+  border: 0.2rem solid #21b2ec;
 }
 .personDiv,
 .planetDiv,
@@ -98,19 +98,19 @@ main div:hover {
 .filmDiv {
   width: 45rem;
   height: 40rem;
-  background-color: #cb200f;
+  background-color: #c83a23;
 }
 .planetDiv {
   width: 30rem;
   height: 31rem;
   color: #0b0b0b;
   background-color: #fff;
-  border: 0.3rem solid #cb200f;
+  border: 0.3rem solid #c83a23;
 }
 .personDiv {
   width: 32rem;
   height: 28rem;
-  background-color: #cb200f;
+  background-color: #c83a23;
   border: 0.3rem solid #fff;
 }
 
@@ -155,7 +155,7 @@ main div:hover {
   width: 10rem;
   height: 10rem;
   border: 1rem solid rgba(255, 0, 0, 0.34);
-  border-top-color: #cb200f;
+  border-top-color: #c83a23;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
