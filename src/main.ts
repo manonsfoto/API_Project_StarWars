@@ -71,10 +71,11 @@ async function fetchPlanets(planetURL: string, isForSearch: boolean) {
   showLoader();
   try {
     await fetchItemsInOnePage(planetURL, isForSearch);
+    planetsArr.sort((a: IPlanet, b: IPlanet) => a.name.localeCompare(b.name));
 
     const planetsHTML = await Promise.all(
       planetsArr.map(async (planet: IPlanet) => {
-        const residents = await fetchCharacters(planet.residents);
+        const residents = await fetchResidents(planet.residents);
         return `
           <div class="planetDiv">
             <p class="planet_name">${planet.name}</p>
@@ -108,7 +109,7 @@ async function fetchPeople(peopleURL: string, isForSearch: boolean) {
   showLoader();
   try {
     await fetchItemsInOnePage(peopleURL, isForSearch);
-
+    peopleArr.sort((a: IPerson, b: IPerson) => a.name.localeCompare(b.name));
     const peopleHTML = await Promise.all(
       peopleArr.map(async (person: IPerson) => {
         const homeworld = await fetchHomeworld(person.homeworld);
@@ -174,13 +175,13 @@ async function fetchItemsInOnePage(routeURL: string, isForSearch: boolean) {
   }
 }
 // ==================================================
-async function fetchCharacters(filmCharacters: string[]): Promise<string> {
+async function fetchResidents(residents: string[]): Promise<string> {
   try {
-    const characterPromises = filmCharacters.map((character) =>
-      fetch(character).then((response) => response.json())
+    const residentsPromises = residents.map((resident) =>
+      fetch(resident).then((response) => response.json())
     );
-    const characters = await Promise.all(characterPromises);
-    return characters.map((character) => character.name).join(", ");
+    const residentsResult = await Promise.all(residentsPromises);
+    return residentsResult.map((resident) => resident.name).join(", ");
   } catch (error) {
     console.error(error);
     return "";

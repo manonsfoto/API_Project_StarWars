@@ -54,11 +54,25 @@ select,
   color: #fff;
   font-size: 3rem;
 }
+
+#btnSearch {
+  background-color: #0b0b0b;
+  padding: 0.2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-shadow: #ffffff 0px 0px 20px;
+}
 button {
   border: none;
 }
 button:hover {
   cursor: pointer;
+}
+nav button:focus {
+  text-shadow: #c83a23 3px 3px 3px;
+  color: #ffd335;
+  font-weight: 800;
+  font-size: 4rem;
 }
 button:hover span {
   text-decoration: underline;
