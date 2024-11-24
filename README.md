@@ -29,11 +29,13 @@ Willkommen zu meinem Projekt "Star Wars", einer interaktiven App, die Daten zu F
 
 ### **Vorschau der App**
 
+![Landing Page](./src/img/preview_landing.png)
 ![Liste aller Star-Wars-Filme](./src/img/preview_films.png)
 ![Loading](./src/img/preview_loading.png)
 ![Liste aller Planeten](./src/img/preview_planets.png)
+![Liste aller Leute](./src/img/preview_people.png)
 ![Search function](./src/img/preview_search.png)
-![Search function](./src/img/preview_search_result.png)
+![Search Result](./src/img/preview_searchResult.png)
 
 ---
 
