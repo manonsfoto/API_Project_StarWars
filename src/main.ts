@@ -27,6 +27,7 @@ const outputElement = document.querySelector("#output") as HTMLDivElement;
 const inputSelect = document.querySelector("#inputSelect") as HTMLInputElement;
 const inputText = document.querySelector("#inputText") as HTMLInputElement;
 const btnSearch = document.querySelector("#btnSearch") as HTMLButtonElement;
+const listName = document.querySelector("#listName") as HTMLHeadElement;
 
 // ^=== Empty Arrays for total items ======================
 
@@ -220,17 +221,20 @@ async function fetchPersonFilms(films: string[]): Promise<string> {
 // ^=== buttons events ======================
 filmsElement?.addEventListener("click", () => {
   document.body.style.backgroundImage = `url(${backgroundImageFilm})`;
+  listName.textContent = "Films";
   outputElement.innerHTML = "";
   fetchFilms(FILMS_ROUTE);
 });
 // ==================================================
 planetsElement?.addEventListener("click", () => {
+  listName.textContent = "Planets";
   document.body.style.backgroundImage = `url(${backgroundImagePlanet})`;
   outputElement.innerHTML = "";
   fetchPlanets(PLANETS_ROUTE, false);
 });
 // ==================================================
 peopleElement?.addEventListener("click", () => {
+  listName.textContent = "People";
   document.body.style.backgroundImage = `url(${backgroundImagePeople})`;
   outputElement.innerHTML = "";
   fetchPeople(PEOPLE_ROUTE, false);
@@ -244,18 +248,21 @@ btnSearch?.addEventListener("click", () => {
   showLoader();
   switch (inputSelect.value) {
     case "films":
+      listName.textContent = "Films";
       document.body.style.backgroundImage = `url(${backgroundImageFilm})`;
       SEARCH_URL = `${FILMS_ROUTE}?search=${textValue}`;
       fetchFilms(SEARCH_URL).finally(() => hideLoader());
       break;
 
     case "planets":
+      listName.textContent = "Planets";
       document.body.style.backgroundImage = `url(${backgroundImagePlanet})`;
       SEARCH_URL = `${PLANETS_ROUTE}?search=${textValue}`;
       fetchPlanets(SEARCH_URL, true).finally(() => hideLoader());
       break;
 
     case "people":
+      listName.textContent = "People";
       document.body.style.backgroundImage = `url(${backgroundImagePeople})`;
       SEARCH_URL = `${PEOPLE_ROUTE}?search=${textValue}`;
       fetchPeople(SEARCH_URL, true).finally(() => hideLoader());
